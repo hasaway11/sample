@@ -1,0 +1,8 @@
+
+.ql-container {
+ height: calc(600px - 42px);
+}
+
+.ql-editor {
+  overflow-y: auto;
+}
