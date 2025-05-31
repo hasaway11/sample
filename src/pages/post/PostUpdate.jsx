@@ -1,9 +1,15 @@
+import 'react-quill-new/dist/quill.snow.css';
+import './PostWrite.css';
+
 import { useNavigate, useSearchParams } from "react-router-dom";
-import usePostStore from "../../stores/postStore";
 import useAuthStore from "../../stores/authStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import TextField from "../../components/common/TextField";
 import BlockButton from "../../components/common/BlockButton";
+import { add, read, update } from "../../utils/postApi";
+import useInput from "../../hooks/useInput";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
+import ReactQuill from "react-quill-new";
 
 
 function PostUpdate() {
@@ -11,12 +17,13 @@ function PostUpdate() {
   const navigate = useNavigate();
   const pno = params.get('pno');
   const [loading, setLoading] = useState(false);
-  
+  const [isSubmitting, setSubmitting] = useState(false);
+  const [content, setContent] = useState(null);
+  const vTitle = useInput();
+  const principal = useAuthStore(state=>state.username);
+
   if(!pno)
     navigate("/");
-
-  const {post, comments, setPost, setComments} = usePostStore();
-  const {principal} = useAuthStore();
 
   useEffect(() => {
     setLoading(true);
@@ -24,8 +31,8 @@ function PostUpdate() {
       try {
         const {data} = await read(pno);
         const {title, content} = data;
-        setPost(postWithoutComments);
-        setComments(comments);
+        vTitle.setValue(title);
+        setContent(content);
       } catch(err) {
         console.log(err);
       } finally {
@@ -35,13 +42,37 @@ function PostUpdate() {
     fetch();
   }, [pno]);
 
-  const doUpdate=()=>{}
+  const doUpdate =async()=>{
+    if (isSubmitting) 
+      return;
+    setSubmitting(true);
+    try {
+      if (!(vTitle.check())) 
+        return;
+      const requestForm = {title:vTitle.value, content:content, pno:pno};
+      await update(requestForm);
+      navigate(`/post/read?pno=${pno}`);
+    } catch(err) {
+      console.log(err);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const modules = {
+    toolbar: {
+      container: [['image'], [{ header: [1, 2, 3, 4, 5, false] }], ['bold', 'underline']]
+    }
+  };
+
+
+  if(loading || !content) return <LoadingSpinner />
 
   return (
     <>
       <TextField label='제목' name='title' field={vTitle} />
-      <ReactQuill theme="snow" name="content" modules={modules}  value={content} onChange={(value)=>setContent(value)} style={{ height: '600px' }}/>
-      <BlockButton label="변 경" onClick={doUpdate} styleName='primary' />
+      <ReactQuill theme="snow" name="content" modules={modules}  value={content} onChange={(value)=>setContent(value)}/>
+      <BlockButton label={isSubmitting ? "변경 중..." : "변 경"} onClick={doUpdate} styleName='primary' />
     </>
   )
 }

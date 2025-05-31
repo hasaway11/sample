@@ -14,7 +14,7 @@ const Paginations = () => {
     for (let i = start; i <= end; i++) 
       pageItem.push(i);
     setPages(pageItem);
-  }, [start, end]);
+  }, []);
 
   const move = (pageno) => navigate(`/?pageno=${pageno}`);
 

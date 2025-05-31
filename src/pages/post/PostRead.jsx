@@ -6,22 +6,24 @@ import { useEffect, useState } from 'react';
 import usePostStore from '../../stores/postStore';
 import useAuthStore from '../../stores/authStore';
 import useComment from '../../hooks/useComment';
-import { read } from '../../utils/postApi';
+import { erase, read } from '../../utils/postApi';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import CommentInput from '../../components/comment/CommentInput';
 import CommentList from '../../components/comment/CommentList';
 
 function PostRead() {
-  const [params] = useSearchParams();
   const navigate = useNavigate();
-  const pno = params.get('pno');
   const [loading, setLoading] = useState(false);
+  const [params] = useSearchParams();
+  const pno = params.get('pno');
   
   if(!pno)
     navigate("/");
 
-  const {post, comments, setPost, setComments} = usePostStore();
-  const {principal} = useAuthStore();
+  const setPost = usePostStore(state=>state.setPost);
+  const setComments = usePostStore(state=>state.setComments);
+  const post = usePostStore(state=>state.post);
+  const username = useAuthStore(state=>state.username);
   const vComment = useComment();
 
   useEffect(() => {
@@ -41,16 +43,18 @@ function PostRead() {
     fetch();
   }, [pno]);
 
-  const deletePost = ()=>{}
+  const deletePost = ()=>{
+    erase(pno).then(()=>navigate("/")).catch(res=>console.log(res));
+  }
 
-  if(loading) return <LoadingSpinner />
-  if(!post) return null;
+  if(loading || !post) return <LoadingSpinner />
 
   return (
     <>
-      <div className="read-title mb-2">
+     <div className="read-title mb-2">
         {post.title}
       </div>
+
       <div className="mb-3" style={{display:'flex', justifyContent:'space-between'}}>
         <div>
           <span className='read-value'>{post.writer}</span>
@@ -66,25 +70,24 @@ function PostRead() {
           <span className="read-key">추천 </span>
           <span className='read-value'>{post.goodCnt}</span>
         </div>
-        {/* {
-          (principal!=null && principal.username===post.writer) &&
-          <GoodButton pno={post.bno} initialGoodCnt={post.goodCnt} />
-        } */}
+        {
+          (username!=null && username===post.writer) &&  <Button variant="primary">좋아요</Button>
+        }
       </div>
-      
+
       <div style={{minHeight:"600px", backgroundColor:'#eee'}} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }} />
-      
+
       {
-        (principal!=null && principal.username===post.writer) &&
+        (username!=null && username===post.writer) &&
         <div className='mt-3 mb-3'>
-          <Button variant="success" onClick={()=>navigate(`/board/update?bno=${post.pno}`)} className="me-3">변경으로</Button>
+          <Button variant="success" onClick={()=>navigate(`/post/update?pno=${pno}`)} className="me-3">변경으로</Button>
           <Button variant="danger" onClick={deletePost}>삭제하기</Button>
         </div>
       }
 
       <div className='mt-3 mb-3'>
-        { principal!=null && <CommentInput pno={pno} field={vComment} /> }
-        <CommentList loginId={principal && principal.username} comments={comments} onRemove={vComment.remove} />
+        { username!=null && <CommentInput pno={pno} value={vComment.value} message={vComment.message} change={vComment.change} check={vComment.check} write={vComment.write} /> }
+        <CommentList loginId={username} />
       </div>
     </>
   )

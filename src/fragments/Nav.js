@@ -3,19 +3,20 @@ import useAuthStore from "../stores/authStore";
 import { logout } from "../utils/authApi";
 
 function Nav() {
-  const {principal, resetPrincipal } = useAuthStore();
+  const username  = useAuthStore(state=>state.username);
+  const resetUsername  = useAuthStore(state=>state.resetUsername);
 
   const doLogout=async (e)=>{
     e.preventDefault();
     try {
       await logout();
-      resetPrincipal();
+      resetUsername();
     } catch(err) {
       console.log(err);
     }
   }
 
-  if(!principal) {
+  if(!username) {
     return (
       <nav>
         <ul>

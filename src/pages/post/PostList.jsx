@@ -9,8 +9,11 @@ import Paginations from "../../components/post/Paginations";
 
 function PostList() {
   const [params] = useSearchParams();
+
   const setPosts = usePostStore(state=>state.setPosts);
   const setPagination = usePostStore(state=>state.setPagination);
+  const posts = usePostStore(state=>state.posts);
+
   const [loading, setLoading] = useState(false);
 
   let pageno = parseInt(params.get('pageno'), 10);
@@ -21,8 +24,8 @@ function PostList() {
     async function fetch() {
       setLoading(true);
       try {
-        const { data } = await readAll(pageno);
-        const {posts, ...pagination} = data;
+        const response = await readAll(pageno);
+        const {posts, ...pagination} = response.data;
         setPosts(posts);
         setPagination(pagination);
       } catch(err) {
@@ -32,9 +35,9 @@ function PostList() {
       }
     }
     fetch();
-  }, []);
+  }, [pageno]);
 
-  if(loading) return <LoadingSpinner />
+  if(loading || !posts) return <LoadingSpinner />
 
   return (
     <>

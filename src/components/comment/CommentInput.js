@@ -1,7 +1,9 @@
+import React from 'react';
 import { Button, Form } from 'react-bootstrap'
 
-function CommentInput({pno, field, onUpdate}) {
-  const {value, change, check, message, write } = field;
+const CommentInput=React.memo(({pno, value, change, check, message, write})=>{
+  const onWrite=()=>write(pno);
+
   return (
     <>
       <hr />
@@ -10,11 +12,11 @@ function CommentInput({pno, field, onUpdate}) {
         <Form.Control as="textarea" rows={5} style={{resize: 'none'}} placeholder={message} onChange={change} value={value} onBlur={check} />
       </Form.Group>
       <div style={{display:'flex', justifyContent:'right'}} >
-        <Button variant='primary' onClick={()=>write(pno, onUpdate)}>작성하기</Button>
+        <Button variant='primary' onClick={onWrite}>작성하기</Button>
       </div>
       <hr />
     </>
   )
-}
+});
 
 export default CommentInput

@@ -5,7 +5,7 @@ import {add, erase} from '../utils/commentApi'
 function useComment() {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
-  const {setComments} = usePostStore();
+  const setComments = usePostStore(state=>state.setComments);
 
   const change = e=>setValue(e.target.value);
 
@@ -40,7 +40,7 @@ function useComment() {
     }
   }
 
-  return {value, message, check, change, write, remove};
+  return {value, message, check, change, remove, write};
 }
 
 export default useComment

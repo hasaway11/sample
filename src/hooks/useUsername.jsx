@@ -1,37 +1,39 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {idAvailable} from '../utils/memberApi'
-
 
 const pattern =  /^[0-9a-z]{6,10}$/;
 
 function useUsername(availableCheck=false) {
-  const [value, setValue] = useState('');
-  const [message, setMessage] = useState('');
-
-  const change = e=>setValue(e.target.value);
-
-  const check = async()=>{
-    setMessage('');
-    const testResult = pattern.test(value);
-    if (!testResult) {
-      setMessage('아이디는 소문자와 숫자 6~10자입니다');
-      return false;
-    }
-    if (availableCheck) {
-      try {
-        await idAvailable(value);
-        return true;
-      } catch (err) {
-        if(err.status===409)
-          setMessage('사용중인 아이디입니다');
-        else
-          console.log(err);
+    const [value, setValue] = useState('');
+    const [message, setMessage] = useState('');
+  
+    const change = useCallback((e) => {
+      setValue(e.target.value)
+    }, []);
+    
+    const check = useCallback(async() => {
+      setMessage('');
+      const testResult = pattern.test(value);
+      if (!testResult) {
+        setMessage('아이디는 소문자와 숫자 6~10자입니다');
         return false;
-      }
-    }
-  }
-
-  return { value, message, change, check };
+      } 
+      if (availableCheck) {
+        try {
+          await idAvailable(value);
+          return true;
+        } catch (err) {
+          if(err.status===409)
+            setMessage('사용중인 아이디입니다');
+          else
+            console.log(err);
+          return false;
+        }
+      } 
+      return true;
+    }, [value]);
+  
+    return useMemo(() => ({ value, message, change, check }), [value, message, change, check]);
 }
 
 export default useUsername

@@ -1,9 +1,13 @@
+import 'react-quill-new/dist/quill.snow.css';
+import './PostWrite.css';
+
 import { useState } from 'react'
 import useInput from '../../hooks/useInput';
 import { useNavigate } from 'react-router-dom';
 import TextField from '../../components/common/TextField';
 import BlockButton from '../../components/common/BlockButton';
-import {write} from '../../utils/memberApi';
+import {add} from '../../utils/postApi';
+import ReactQuill from 'react-quill-new';
 
 function PostWrite() {
   const [isSubmitting, setSubmitting] = useState(false);
@@ -19,7 +23,7 @@ function PostWrite() {
       if (!(vTitle.check())) 
         return;
       const requestForm = {title:vTitle.value, content:content};
-      const {data} = await write(requestForm);
+      const {data} = await add(requestForm);
       navigate(`/post/read?pno=${data.pno}`);
     } catch(err) {
       console.log(err);
@@ -37,7 +41,7 @@ function PostWrite() {
   return (
     <>
       <TextField label='제목' name='title' field={vTitle} />
-      <ReactQuill theme="snow" name="content" modules={modules}  value={content} onChange={(value)=>setContent(value)} style={{ height: '600px' }}/>
+      <ReactQuill theme="snow" name="content" modules={modules}  value={content} onChange={(value)=>setContent(value)}/>
       <BlockButton label="글쓰기" onClick={doWrite} styleName='primary' />
     </>
   )
