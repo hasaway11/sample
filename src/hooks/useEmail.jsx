@@ -16,7 +16,9 @@ function useEmail() {
     return false;
   };
 
-  return {value, message, check, change};
+  const reset = ()=>setValue("");
+
+  return {value, message, check, change, reset};
 }
 
 export default useEmail

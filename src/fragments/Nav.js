@@ -21,7 +21,7 @@ function Nav() {
       <nav>
         <ul>
           <li><Link to={"/"} style={{color:'white'}}>HOME</Link></li>
-          <li><Link to={"/member/join"}>회원가입</Link></li>
+          <li><Link to={"/member/signup"}>회원가입</Link></li>
           <li><Link to={"/member/find-username"}>아이디 찾기</Link></li>
           <li><Link to={"/member/login"}>로그인</Link></li>
         </ul>

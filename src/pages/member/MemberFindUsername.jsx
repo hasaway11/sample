@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { Alert } from "react-bootstrap";
+
 import TextField from "../../components/common/TextField";
 import useEmail from "../../hooks/useEmail";
 import BlockButton from "../../components/common/BlockButton";
-import { Alert } from "react-bootstrap";
 import {findUsername} from '../../utils/memberApi';
 
 function MemberFindUsername() {
@@ -31,13 +32,19 @@ function MemberFindUsername() {
     }
   }
 
+  const onBlur = ()=>{
+    setFoundUsername("");
+    setMessage("");
+    vEmail.check();
+  }
+
   return (
     <div>
       <h1>아이디 찾기</h1>
-      <TextField label='이메일' field={vEmail} />
+      <TextField label='이메일' value={vEmail.value} message={vEmail.message} onBlur={onBlur} onChange={vEmail.change} />
       {foundUsername &&  <Alert variant='success'>당신의 아이디 : {foundUsername}</Alert>}
       {message && <Alert variant='danger'>{message}</Alert>}
-      <BlockButton label={isSubmitting ? "찾는 중..." : "아이디 찾기"} onClick={doFindUsername} style='success' disabled={isSubmitting} />
+      <BlockButton label={isSubmitting ? "찾는 중..." : "아이디 찾기"} onClick={doFindUsername} styleName='dark' disabled={isSubmitting} />
     </div>
   )
 }

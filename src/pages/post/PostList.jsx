@@ -37,7 +37,8 @@ function PostList() {
     fetch();
   }, [pageno]);
 
-  if(loading || !posts) return <LoadingSpinner />
+  if(loading || posts===null) return <LoadingSpinner />
+  if(posts.length===0) return <div>게시글이 없습니다</div>
 
   return (
     <>

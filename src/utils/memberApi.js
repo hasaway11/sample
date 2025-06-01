@@ -2,7 +2,7 @@ import api from "./api";
 
 export const idAvailable = (username)=>api.get(`/api/members/check-username?username=${username}`);
 
-export const signup = (formData)=>api.post('/api/member/new', formData);
+export const signup = (formData)=>api.post('/api/members/new', formData);
 
 export const findUsername = (email)=>api.get(`/api/members/username?email=${email}`);
 

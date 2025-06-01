@@ -51,10 +51,10 @@ function MemberSignup() {
   return (
     <>
       <ProfileField name='photo' label='사진' onChange={vProfile.change} photoUrl={vProfile.photoUrl} alt='미리보기' />
-      <TextField label='아이디' name='username' field={vUsername} />
-      <TextField label='이메일' name='email' field={vEmail} />
-      <TextField label='비밀번호' name='password' type='password' field={vPassword} />
-      <TextField label='비밀번호 확인' name='confirm-password' type='password' field={vConfirmPassword} />
+      <TextField label='아이디' name='username' value={vUsername.value} message={vUsername.message} onChange={vUsername.change} onBlur={vUsername.check} />
+      <TextField label='이메일' name='email' value={vEmail.value} message={vEmail.message} onChange={vEmail.change} onBlur={vEmail.check} />
+      <TextField label='비밀번호' name='password' type='password' value={vPassword.value} message={vPassword.message} onChange={vPassword.change} onBlur={vPassword.check} />
+      <TextField label='비밀번호 확인' name='confirm-password' type='password' value={vConfirmPassword.value} message={vConfirmPassword.message} onChange={vConfirmPassword.change} onBlur={vConfirmPassword.check} />
       <BlockButton label={isSubmitting ? "가입 처리 중..." : "회원 가입"} onClick={doSignup} styleName='primary' disabled={isSubmitting}/>
     </>
   )
