@@ -1,12 +1,13 @@
-import  { useCallback, useMemo, useState } from 'react'
+import  { useState } from 'react'
 
 function useConfirmPassword(vPassword) {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
   
-  const change = useCallback(e=>setValue(e.target.value), []);
+  const change = e=>setValue(e.target.value);
 
-  const check=useCallback(()=>{
+  const check=()=>{
+    setMessage('');
     if(value==='') {
       setMessage('확인을 위해 비밀번호를 다시 입력해주세요');
       return false;
@@ -16,9 +17,11 @@ function useConfirmPassword(vPassword) {
       setMessage('새 비밀번호가 일치하지 않습니다');
       return false;
     }
-  }, [value]);
+  };
 
-  return useMemo(()=>({value, message, check, change}), [value, message, check, change]);
+  const reset = ()=>setValue('');
+
+  return {value, message, check, change, reset};
 }
 
 export default useConfirmPassword

@@ -2,45 +2,33 @@ import 'react-quill-new/dist/quill.snow.css';
 import './PostWrite.css';
 
 import { useNavigate, useSearchParams } from "react-router-dom";
-import useAuthStore from "../../stores/authStore";
 import { useEffect, useState } from "react";
 import TextField from "../../components/common/TextField";
 import BlockButton from "../../components/common/BlockButton";
-import { add, read, update } from "../../utils/postApi";
+import { update } from "../../utils/postApi";
 import useInput from "../../hooks/useInput";
-import LoadingSpinner from "../../components/common/LoadingSpinner";
 import ReactQuill from "react-quill-new";
+import usePostStore from '../../stores/postStore';
 
 
 function PostUpdate() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const pno = params.get('pno');
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
+  // const username = useAuthStore(state=>state.username);
+  const post = usePostStore(state=>state.post);
   const [content, setContent] = useState(null);
   const vTitle = useInput();
-  const principal = useAuthStore(state=>state.username);
 
   if(!pno)
     navigate("/");
 
   useEffect(() => {
-    setLoading(true);
-    async function fetch() {
-      try {
-        const {data} = await read(pno);
-        const {title, content} = data;
-        vTitle.setValue(title);
-        setContent(content);
-      } catch(err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetch();
-  }, [pno]);
+    vTitle.setValue(post.title);
+    setContent(post.content);
+  }, []);
 
   const doUpdate =async()=>{
     if (isSubmitting) 
@@ -66,7 +54,7 @@ function PostUpdate() {
   };
 
 
-  if(loading || !content) return <LoadingSpinner />
+  if(!content) return;
 
   return (
     <>

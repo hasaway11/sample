@@ -1,6 +1,4 @@
-import React from "react";
-
-const TextField=React.memo(({name, type='text', label, field})=>{
+const TextField=({name, type='text', label, field})=>{
   const { value, change, check, message } = field;
   return  (
     <div className='mt-3 mb-3'>
@@ -9,6 +7,6 @@ const TextField=React.memo(({name, type='text', label, field})=>{
       {message!=='' && <span style={{color:'red'}}>{message}</span>}
     </div>
   )
-});
+};
 
 export default TextField;

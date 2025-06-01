@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import {idAvailable} from '../utils/memberApi'
 
 const pattern =  /^[0-9a-z]{6,10}$/;
@@ -7,11 +7,9 @@ function useUsername(availableCheck=false) {
     const [value, setValue] = useState('');
     const [message, setMessage] = useState('');
   
-    const change = useCallback((e) => {
-      setValue(e.target.value)
-    }, []);
+    const change = (e) =>setValue(e.target.value);
     
-    const check = useCallback(async() => {
+    const check = async() => {
       setMessage('');
       const testResult = pattern.test(value);
       if (!testResult) {
@@ -31,9 +29,9 @@ function useUsername(availableCheck=false) {
         }
       } 
       return true;
-    }, [value]);
+    };
   
-    return useMemo(() => ({ value, message, change, check }), [value, message, change, check]);
+    return { value, message, change, check };
 }
 
 export default useUsername

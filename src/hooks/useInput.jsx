@@ -1,20 +1,20 @@
-import  { useCallback, useMemo, useState } from 'react'
+import  { useState } from 'react'
 
 function useInput() {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
 
-  const change = useCallback(e=>setValue(e.target.value), []);
+  const change = e=>setValue(e.target.value);
 
-  const check=useCallback(()=>{
+  const check=()=>{
     setMessage('');
     if(value!=='')
       return true;
     setMessage('필수 입력입니다');
     return false;
-  }, [value]);
+  };
 
-  return useMemo(()=>({value, message, check, change, setValue}), [value, message, check, change, setValue]);
+  return {value, message, check, change, setValue};
 }
 
 export default useInput

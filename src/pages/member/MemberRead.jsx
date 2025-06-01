@@ -1,50 +1,66 @@
-import { useEffect } from "react";
-import ProfileField from "../../component/member/ProfileField";
-import useProfile from "../../hooks/usePhoto";
-import useFetch from "../../hooks/useFetch";
-import LoadingSpinner from "../../component/common/LoadingSpinner";
+import { useEffect, useState } from "react";
+import ProfileField from "../../components/member/ProfileField";
+import usePhoto from "../../hooks/usePhoto";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
+import { read } from "../../utils/memberApi";
+import { useNavigate } from "react-router-dom";
 
 function MemberRead() {
-  const [member, loading, error] = useFetch(`/members/read`);
-  const profile = useProfile();
+  const [loading, setLoading] = useState(false);
+  const vProfile = usePhoto();
+  const [member, setMember] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(()=>{
-    profile.setPhotoUrl(member.photo)
-  }, [member]);
+    setLoading(true);
+    async function fetch() {
+      try {
+        const response = await read();
+        const {profile, ...rest} = response.data;
+        vProfile.setPhotoUrl(profile);
+        setMember(rest);
+      } catch(err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
+  }, []);
 
-  if(loading) return <LoadingSpinner />
-  if(error) return <div>{error.message}</div>;
-  if(!member) return null;
+  if(loading || !member) return <LoadingSpinner />
 
   return (
     <div>
       <table className='table table-border'>
-        <tr>
-          <td colSpan={2}>
-            <ProfileField name='photo' label='사진' onChange={profile.change} photoUrl={profile.photoUrl} alt='미리보기' />
-          </td>
-        </tr>
-        <tr>
-          <td>아이디</td>
-          <td>{member.username}</td>
-        </tr>
-        <tr>
-          <td>이메일</td>
-          <td>{member.email}</td>
-        </tr>
-        <tr>
-          <td>레벨</td>
-          <td>{member.level}</td>
-        </tr>
-        <tr>
-          <td>가입입</td>
-          <td>`${member.joinday} (${member.days}일)`</td>
-        </tr>
-        <tr>
-          <td colSpan={2}>
-            <button className='btn btn-primary'>비밀번호 변경</button>
-          </td>
-        </tr>
+        <tbody>
+          <tr>
+            <td colSpan={2}>
+              <ProfileField name='photo' label='사진' onChange={vProfile.change} photoUrl={vProfile.photoUrl} alt='미리보기' />
+            </td>
+          </tr>
+          <tr>
+            <td>아이디</td>
+            <td>{member.username}</td>
+          </tr>
+          <tr>
+            <td>이메일</td>
+            <td>{member.email}</td>
+          </tr>
+          <tr>
+            <td>레벨</td>
+            <td>{member.level}</td>
+          </tr>
+          <tr>
+            <td>가입입</td>
+            <td>{`${member.joinday} (${member.days}일)`}</td>
+          </tr>
+          <tr>
+            <td colSpan={2}>
+              <button className='btn btn-primary' onClick={()=>navigate('/member/change-password')}>비밀번호 변경</button>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   )

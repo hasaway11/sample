@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import DOMPurify from 'dompurify';
 import { useEffect, useState } from 'react';
@@ -10,23 +10,26 @@ import { erase, read } from '../../utils/postApi';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import CommentInput from '../../components/comment/CommentInput';
 import CommentList from '../../components/comment/CommentList';
+import GoodButton from '../../components/post/GoodButton';
 
 function PostRead() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [params] = useSearchParams();
   const pno = params.get('pno');
-  
-  if(!pno)
-    navigate("/");
 
   const setPost = usePostStore(state=>state.setPost);
   const setComments = usePostStore(state=>state.setComments);
   const post = usePostStore(state=>state.post);
   const username = useAuthStore(state=>state.username);
   const vComment = useComment();
-
+    
   useEffect(() => {
+    if (!pno) {
+      navigate("/");
+      // 여기서 바로 함수 종료해야 fetch 안 함
+      return; 
+    }
     setLoading(true);
     async function fetch() {
       try {
@@ -43,9 +46,7 @@ function PostRead() {
     fetch();
   }, [pno]);
 
-  const deletePost = ()=>{
-    erase(pno).then(()=>navigate("/")).catch(res=>console.log(res));
-  }
+  const deletePost = ()=>erase(pno).then(()=>navigate("/")).catch(res=>console.log(res));
 
   if(loading || !post) return <LoadingSpinner />
 
@@ -71,7 +72,7 @@ function PostRead() {
           <span className='read-value'>{post.goodCnt}</span>
         </div>
         {
-          (username!=null && username===post.writer) &&  <Button variant="primary">좋아요</Button>
+          (username!=null && username!==post.writer) &&  <GoodButton pno={pno} initialGoodCnt={post.goodCnt}>좋아요</GoodButton>
         }
       </div>
 

@@ -27,7 +27,7 @@ function MemberLogin() {
 
     try {
       const response = await login(requestForm)
-      setUsername(response.data);
+      setUsername(response.data.username);
       navigate("/");
     } catch(err) {
       setLoginFail(true);

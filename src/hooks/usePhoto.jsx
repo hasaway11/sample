@@ -1,10 +1,10 @@
-import  { useCallback, useMemo, useState } from 'react'
+import  { useState } from 'react'
 
 function usePhoto() {
   const [value, setValue] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(null);
 
-  const change = useCallback((e)=>{
+  const change = (e)=>{
     const file = e.target.files[0];
     setValue(file);
 
@@ -15,9 +15,9 @@ function usePhoto() {
     } else {
       setPhotoUrl(null);
     }
-  }, [value]);
+  };
 
-  return useMemo(()=>({value, photoUrl, change, setPhotoUrl}), [value, photoUrl, change, setPhotoUrl]);
+  return {value, photoUrl, change, setPhotoUrl};
 }
 
 
