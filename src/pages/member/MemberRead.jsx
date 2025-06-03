@@ -6,11 +6,11 @@ import { changeProfile, read } from "../../utils/memberApi";
 import { useNavigate } from "react-router-dom";
 import useMemberStore from "../../stores/memberStore";
 import { Alert } from "react-bootstrap";
+import { AsyncStatus } from "../../utils/constants";
 
 function MemberRead() {
-  const [loading, setLoading] = useState(false);
-  const [isSubmitting, setSubmitting] = useState(false);
-  const [isFail, setFail] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState(AsyncStatus.IDLE);
+  const [submitStatus, setSubmitStatus] = useState(AsyncStatus.IDLE);
 
   const member = useMemberStore(state=>state.member);
   const setMember = useMemberStore(state=>state.setMember);
@@ -24,41 +24,42 @@ function MemberRead() {
       return;
     }
     
-    setLoading(true);
+    setLoadingStatus(AsyncStatus.LOADING);
     async function fetch() {
       try {
         const response = await read();
         setMember(response.data);
         vProfile.setPhotoUrl(response.data.profile);
+        setLoadingStatus(AsyncStatus.SUCCESS);
       } catch(err) {
-        setFail(true);
+        setLoadingStatus(AsyncStatus.FAIL);
         console.log(err);
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
     fetch();
   }, []);
 
   const doChangeProfile=async()=>{
+    if(submitStatus===AsyncStatus.SUBMITTING) return;
+    setSubmitStatus(AsyncStatus.SUBMITTING);
+
     if(vProfile.value===null)
       return;
-    setSubmitting(true);
     try {
       const formData = new FormData();
       formData.append('profile', vProfile.value);
       const response = await changeProfile(formData);
       setMember(response.data);
+      setSubmitStatus(AsyncStatus.SUCCESS);
     } catch(err) {
+      setSubmitStatus(AsyncStatus.FAIL);
       console.log(err);
-    } finally {
-      setSubmitting(false);
-    }
+    } 
   }
   
-  if(isFail) 
-    return <Alert variant='danger'>서버가 응답하지 않습니다</Alert>
-  if(loading || !member) return <LoadingSpinner />
+  if(loadingStatus===AsyncStatus.IDLE || loadingStatus===AsyncStatus.LOADING)  return <LoadingSpinner />
+  if(loadingStatus===AsyncStatus.FAIL) return <Alert variant='danger'>서버가 응답하지 않습니다</Alert>
+
 
   return (
     <div>
@@ -67,7 +68,7 @@ function MemberRead() {
           <tr>
             <td colSpan={2}>
               <ProfileField name='photo' label='사진' alt='미리보기' {...vProfile} />
-              <button className='btn btn-primary' onClick={doChangeProfile} disabled={vProfile.value===null}>{isSubmitting ? "프사 변경 중..." : "프사 변경"}</button>
+              <button className='btn btn-primary' onClick={doChangeProfile} disabled={vProfile.value===null}>{submitStatus===AsyncStatus.SUBMITTING ? "프사 변경 중..." : "프사 변경"}</button>
             </td>
           </tr>
           <tr>

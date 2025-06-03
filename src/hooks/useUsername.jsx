@@ -21,10 +21,8 @@ function useUsername(availableCheck=false) {
           await idAvailable(value);
           return true;
         } catch (err) {
-          if(err.status===409)
-            setMessage('사용중인 아이디입니다');
-          else
-            console.log(err);
+          setMessage('사용할 수 없는 아이디입니다');
+          console.log(err);
           return false;
         }
       } 

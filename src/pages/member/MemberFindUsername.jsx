@@ -5,35 +5,36 @@ import TextField from "../../components/common/TextField";
 import useEmail from "../../hooks/useEmail";
 import BlockButton from "../../components/common/BlockButton";
 import {findUsername} from '../../utils/memberApi';
+import { AsyncStatus } from "../../utils/constants";
 
 function MemberFindUsername() {
-  const [isSubmitting, setSubmitting] = useState(false);
+  const [asyncStatus, setAsyncStatus] = useState(AsyncStatus.IDLE);
   const [username, setUsername] = useState('');
-  const [isFail, setFail] = useState(false);
   const vEmail = useEmail();
 
   const init=()=>{
     setUsername("");
-    setFail(false);
+    setAsyncStatus(AsyncStatus.IDLE);
   }
 
   const doFindUsername=async ()=>{
     init();
     
-    if (isSubmitting) return; 
-    if (!vEmail.onBlur()) return;
+    if(asyncStatus===AsyncStatus.SUBMITTING) return;
+    setAsyncStatus(AsyncStatus.SUBMITTING);
 
-    setSubmitting(true); 
+    if (!vEmail.onBlur()) {
+      setAsyncStatus(AsyncStatus.IDLE);
+      return;
+    }
+
     try {
       const response = await findUsername(vEmail.value);
       setUsername(response.data);
+      setAsyncStatus(AsyncStatus.SUCCESS);
     } catch(err) {
-      if(err.status===409) 
-        setFail(true);
-      else 
-        console.log(err);
-    } finally {
-      setSubmitting(false);
+      setAsyncStatus(AsyncStatus.FAIL);
+      console.log(err);
     }
   }
 
@@ -46,9 +47,9 @@ function MemberFindUsername() {
     <div>
       <h1>아이디 찾기</h1>
       {username &&  <Alert variant='success'>당신의 아이디 : {username}</Alert>}
-      {isFail && <Alert variant='danger'>아이디를 찾지 못했습니다</Alert>}
+      {asyncStatus===AsyncStatus.FAIL && <Alert variant='danger'>아이디를 찾지 못했습니다</Alert>}
       <TextField label='이메일' value={vEmail.value} message={vEmail.message} onBlur={onBlur} onChange={vEmail.onChange} />
-      <BlockButton label={isSubmitting ? "찾는 중..." : "아이디 찾기"} onClick={doFindUsername} styleName='dark' disabled={isSubmitting} />
+      <BlockButton label={asyncStatus===AsyncStatus.SUBMITTING ? "찾는 중..." : "아이디 찾기"} onClick={doFindUsername} styleName='dark' disabled={asyncStatus===AsyncStatus.SUBMITTING} />
     </div>
   )
 }

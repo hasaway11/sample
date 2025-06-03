@@ -11,12 +11,12 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import CommentInput from '../../components/comment/CommentInput';
 import CommentList from '../../components/comment/CommentList';
 import GoodButton from '../../components/post/GoodButton';
+import { AsyncStatus } from '../../utils/constants';
 
 function PostRead() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const [loading, setLoading] = useState(false);
-  const [isFail, setFail] = useState(false);
+  const [asyncStatus, setAsyncStatus] = useState(AsyncStatus.IDLE);
 
   const post = usePostStore(state=>state.post);
   const setPost = usePostStore(state=>state.setPost);
@@ -35,19 +35,17 @@ function PostRead() {
       return; 
     }  
 
-    setLoading(true);
-    setFail(false);
+    setAsyncStatus(AsyncStatus.LOADING)
     async function fetch() {
       try {
         const {data} = await read(pno);
         const {comments, ...postWithoutComments} = data;
         setPost(postWithoutComments);
         setComments(comments);
+        setAsyncStatus(AsyncStatus.SUCCESS);
       } catch(err) {
-        setFail(true);
+        setAsyncStatus(AsyncStatus.FAIL);
         console.log(err);
-      } finally {
-        setLoading(false);
       }
     }
     fetch();
@@ -55,9 +53,8 @@ function PostRead() {
 
   const deletePost = ()=>erase(pno).then(()=>navigate("/")).catch(res=>console.log(res));
 
-  if(isFail) 
-    return <Alert variant='danger'>서버가 응답하지 않습니다</Alert>
-  if(loading || post===null) return <LoadingSpinner />
+  if(asyncStatus===AsyncStatus.IDLE || asyncStatus===AsyncStatus.LOADING)  return <LoadingSpinner />
+  if(asyncStatus===AsyncStatus.FAIL) return <Alert variant='danger'>서버가 응답하지 않습니다</Alert>
 
   return (
     <>
