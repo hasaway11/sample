@@ -19,9 +19,11 @@ function MemberChangePassword() {
   const vConfirmPassword = useConfirmPassword(vNewPassword);
 
   const doChangePassword=async ()=>{
-    const r1 = vCurrentPassword.check();
-    const r2 = vNewPassword.check();
-    const r3 = vConfirmPassword.check();
+    if (isSubmitting) return; 
+
+    const r1 = vCurrentPassword.onBlur();
+    const r2 = vNewPassword.onBlur();
+    const r3 = vConfirmPassword.onBlur();
     if (!(r1 && r2 && r3)) 
       return;
 
@@ -39,7 +41,8 @@ function MemberChangePassword() {
     } catch(err) {
       if(err.status===409) 
         setFail(true);
-      console.log(err);
+      else 
+        console.log(err);
     } finally {
       setSubmitting(false); 
     }
@@ -47,11 +50,12 @@ function MemberChangePassword() {
 
   return (
     <div>
+      <h1>비밀번호 변경</h1>
       {isSuccess &&  <Alert variant='success'>비밀번호를 변경했습니다</Alert>}
-      {isFail &&  <Alert variant='danger'>비밀번호를 변경에 실패했습니다</Alert>}
-      <TextField type='password' label='기존 비밀번호' name='current-password' field={vCurrentPassword} />
-      <TextField type='password' label='새 비밀번호' name='new-password' field={vNewPassword} />
-      <TextField type='password' label='비밀번호 확인' name='confirm-password' field={vConfirmPassword} />
+      {isFail &&  <Alert variant='danger'>비밀번호를 변경하지 못했습니다</Alert>}
+      <TextField type='password' label='기존 비밀번호' name='current-password' {...vCurrentPassword} />
+      <TextField type='password' label='새 비밀번호' name='new-password' {...vNewPassword} />
+      <TextField type='password' label='비밀번호 확인' name='confirm-password' {...vConfirmPassword} />
       <BlockButton label={isSubmitting ? "비밀번호 변경 중..." : "변 경"} onClick={doChangePassword} styleName='dark' disabled={isSubmitting}/>
     </div>
   )

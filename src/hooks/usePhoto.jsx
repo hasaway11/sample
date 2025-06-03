@@ -4,7 +4,7 @@ function usePhoto() {
   const [value, setValue] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(null);
 
-  const change = (e)=>{
+  const onChange = (e)=>{
     const file = e.target.files[0];
     setValue(file);
 
@@ -17,7 +17,7 @@ function usePhoto() {
     }
   };
 
-  return {value, photoUrl, change, setPhotoUrl};
+  return {value, photoUrl, onChange, setPhotoUrl};
 }
 
 

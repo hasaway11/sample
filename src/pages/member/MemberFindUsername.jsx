@@ -8,42 +8,46 @@ import {findUsername} from '../../utils/memberApi';
 
 function MemberFindUsername() {
   const [isSubmitting, setSubmitting] = useState(false);
-  const [foundUsername, setFoundUsername] = useState('');
-  const [message, setMessage] = useState('');
-
+  const [username, setUsername] = useState('');
+  const [isFail, setFail] = useState(false);
   const vEmail = useEmail();
 
+  const init=()=>{
+    setUsername("");
+    setFail(false);
+  }
+
   const doFindUsername=async ()=>{
-    setFoundUsername("");
-    setMessage("");
+    init();
     
-    if (!vEmail.check()) return;
-    if (isSubmitting) return;
+    if (isSubmitting) return; 
+    if (!vEmail.onBlur()) return;
 
     setSubmitting(true); 
     try {
       const response = await findUsername(vEmail.value);
-      setFoundUsername(response.data);
+      setUsername(response.data);
     } catch(err) {
       if(err.status===409) 
-        setMessage("사용자를 찾지 못했습니다");
+        setFail(true);
+      else 
+        console.log(err);
     } finally {
       setSubmitting(false);
     }
   }
 
   const onBlur = ()=>{
-    setFoundUsername("");
-    setMessage("");
-    vEmail.check();
+    init();
+    vEmail.onBlur();
   }
 
   return (
     <div>
       <h1>아이디 찾기</h1>
-      <TextField label='이메일' value={vEmail.value} message={vEmail.message} onBlur={onBlur} onChange={vEmail.change} />
-      {foundUsername &&  <Alert variant='success'>당신의 아이디 : {foundUsername}</Alert>}
-      {message && <Alert variant='danger'>{message}</Alert>}
+      {username &&  <Alert variant='success'>당신의 아이디 : {username}</Alert>}
+      {isFail && <Alert variant='danger'>아이디를 찾지 못했습니다</Alert>}
+      <TextField label='이메일' value={vEmail.value} message={vEmail.message} onBlur={onBlur} onChange={vEmail.onChange} />
       <BlockButton label={isSubmitting ? "찾는 중..." : "아이디 찾기"} onClick={doFindUsername} styleName='dark' disabled={isSubmitting} />
     </div>
   )

@@ -8,9 +8,11 @@ export const findUsername = (email)=>api.get(`/api/members/username?email=${emai
 
 export const resetPassword = (object)=>api.put(`/api/members/password`, new URLSearchParams(object));
 
-export const checkPassword = (object)=>api.get('/api/members/check-password', new URLSearchParams(object));
+export const checkPassword = (password)=>api.get(`/api/members/check-password?password=${password}`);
 
 export const read = ()=>api.get('/api/members/member');
+
+export const changeProfile = (formData)=>api.put('/api/members/profile', formData)
 
 export const changePassword = (object)=>api.patch('/api/members/password', new URLSearchParams(object));
 

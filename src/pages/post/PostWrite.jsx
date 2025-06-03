@@ -2,12 +2,14 @@ import 'react-quill-new/dist/quill.snow.css';
 import './PostWrite.css';
 
 import { useState } from 'react'
-import useInput from '../../hooks/useInput';
 import { useNavigate } from 'react-router-dom';
+import ReactQuill from 'react-quill-new';
+
+import useInput from '../../hooks/useInput';
 import TextField from '../../components/common/TextField';
 import BlockButton from '../../components/common/BlockButton';
 import {add} from '../../utils/postApi';
-import ReactQuill from 'react-quill-new';
+
 
 function PostWrite() {
   const [isSubmitting, setSubmitting] = useState(false);
@@ -18,18 +20,12 @@ function PostWrite() {
   const doWrite =async()=>{
     if (isSubmitting) 
       return;
+
     setSubmitting(true);
-    try {
-      if (!(vTitle.check())) 
-        return;
-      const requestForm = {title:vTitle.value, content:content};
-      const {data} = await add(requestForm);
-      navigate(`/post/read?pno=${data.pno}`);
-    } catch(err) {
-      console.log(err);
-    } finally {
-      setSubmitting(false);
-    }
+    if (!(vTitle.check())) 
+      return;
+    const requestForm = {title:vTitle.value, content:content};
+    add(requestForm).then(res=>navigate(`/post/read?pno=${res.data.pno}`)).catch(err=>console.log(err)).finally(()=>setSubmitting(false));
   }
 
   const modules = {

@@ -14,3 +14,17 @@ options
 - 조건
   요청 메서드가 GET, POST, HEAD가 아닌 경우
   POST이지만 Content-Type이 urlencoded, form-data, text/plain이 아닌 경우
+
+항목	                    설명	                                                  즉시 반영?	                                예시
+상태 (useState, useStore)	컴포넌트 렌더에 영향을 주는 값. React가 추적함	        ❌ 비동기적으로 반영됨	        useState, zustand, useMemberStore(state => state.xxx)
+사용자 입력 (이벤트 값)	    사용자가 입력한 값 등, 이벤트에서 직접 받은 값	        ✅ 즉시 사용 가능	            event.target.value, ref.current.value 등
+상태 기반 분기처리	        반드시 useEffect 안에서 처리해야 안전	                                              -	if (isPasswordVerified) navigate(...)
+
+
+1. **상태(state)**는 즉시 반영되지 않음
+React는 상태를 변경하면:
+  바로 렌더링을 하지 않고,
+  변경 요청 → React가 다음 렌더에서 반영함
+  즉, 변경 직후에는 이전 값일 수도 있음.
+
+2. **사용자 입력(event 값 등)**은 즉시 사용 가능 -> 3. 상태 변경 후 반응할 작업은 useEffect 사용

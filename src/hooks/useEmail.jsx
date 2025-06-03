@@ -6,9 +6,9 @@ function useEmail() {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
 
-  const change = e=>setValue(e.target.value);
+  const onChange = e=>setValue(e.target.value);
 
-  const check= ()=>{
+  const onBlur= ()=>{
     setMessage('');
     if(pattern.test(value))
       return true;
@@ -18,7 +18,7 @@ function useEmail() {
 
   const reset = ()=>setValue("");
 
-  return {value, message, check, change, reset};
+  return {value, message, onBlur, onChange, reset};
 }
 
 export default useEmail

@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import { getUsername } from '../utils/authApi';
 
-const useAuthStore = create((set) => ({
+const useAuthStore = create((set, get) => ({
   // undefined : 아직 체크안 한 상태, null : 비로그인
   username: undefined,
-  isPasswordVerified: false,
+
 
   checkAuth: async () => {
     try {
@@ -21,7 +21,12 @@ const useAuthStore = create((set) => ({
 
   resetUsername: () => set(state=>({...state, username: null })),
 
-  verifyPassword: () => set(state=>({...state, isPasswordVerified: true }))
+  isLogin:()=>{
+    const username = get().username;
+    return (typeof username === 'string') && username.length > 0;
+  },
+
+  isWriter:(writer) => get().username===writer, 
 }));
 
 export default useAuthStore;

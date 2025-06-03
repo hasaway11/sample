@@ -4,9 +4,9 @@ function useInput() {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
 
-  const change = e=>setValue(e.target.value);
+  const onChange = e=>setValue(e.target.value);
 
-  const check=()=>{
+  const onBlur=()=>{
     setMessage('');
     if(value!=='')
       return true;
@@ -14,7 +14,7 @@ function useInput() {
     return false;
   };
 
-  return {value, message, check, change, setValue};
+  return {value, message, onBlur, onChange, setValue};
 }
 
 export default useInput

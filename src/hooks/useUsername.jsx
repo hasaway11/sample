@@ -7,9 +7,9 @@ function useUsername(availableCheck=false) {
     const [value, setValue] = useState('');
     const [message, setMessage] = useState('');
   
-    const change = (e) =>setValue(e.target.value);
+    const onChange = (e) =>setValue(e.target.value);
     
-    const check = async() => {
+    const onBlur = async() => {
       setMessage('');
       const testResult = pattern.test(value);
       if (!testResult) {
@@ -31,7 +31,7 @@ function useUsername(availableCheck=false) {
       return true;
     };
   
-    return { value, message, change, check };
+    return { value, message, onChange, onBlur };
 }
 
 export default useUsername

@@ -3,11 +3,12 @@ import './PostWrite.css';
 
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import ReactQuill from "react-quill-new";
+
 import TextField from "../../components/common/TextField";
 import BlockButton from "../../components/common/BlockButton";
 import { update } from "../../utils/postApi";
 import useInput from "../../hooks/useInput";
-import ReactQuill from "react-quill-new";
 import usePostStore from '../../stores/postStore';
 
 
@@ -15,12 +16,13 @@ function PostUpdate() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const pno = params.get('pno');
-  // const [loading, setLoading] = useState(false);
-  const [isSubmitting, setSubmitting] = useState(false);
-  // const username = useAuthStore(state=>state.username);
+  
+  const [loading, setLoading] = useState(false);
   const post = usePostStore(state=>state.post);
   const [content, setContent] = useState(null);
   const vTitle = useInput();
+
+  const [isSubmitting, setSubmitting] = useState(false);
 
   if(!pno)
     navigate("/");

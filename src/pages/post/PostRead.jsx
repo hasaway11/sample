@@ -1,5 +1,5 @@
-import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Alert, Button } from 'react-bootstrap';
 import DOMPurify from 'dompurify';
 import { useEffect, useState } from 'react';
 
@@ -14,23 +14,29 @@ import GoodButton from '../../components/post/GoodButton';
 
 function PostRead() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
   const [params] = useSearchParams();
-  const pno = params.get('pno');
+  const [loading, setLoading] = useState(false);
+  const [isFail, setFail] = useState(false);
 
+  const post = usePostStore(state=>state.post);
   const setPost = usePostStore(state=>state.setPost);
   const setComments = usePostStore(state=>state.setComments);
-  const post = usePostStore(state=>state.post);
-  const username = useAuthStore(state=>state.username);
+
+  const isLogin = useAuthStore(state=>state.isLogin);
+  const isWriter = useAuthStore(state=>state.isWriter);
+
   const vComment = useComment();
-    
+
+  const pno = parseInt(params.get('pno'));
+
   useEffect(() => {
-    if (!pno) {
+    if (isNaN(pno)) {
       navigate("/");
-      // 여기서 바로 함수 종료해야 fetch 안 함
       return; 
-    }
+    }  
+
     setLoading(true);
+    setFail(false);
     async function fetch() {
       try {
         const {data} = await read(pno);
@@ -38,6 +44,7 @@ function PostRead() {
         setPost(postWithoutComments);
         setComments(comments);
       } catch(err) {
+        setFail(true);
         console.log(err);
       } finally {
         setLoading(false);
@@ -48,7 +55,9 @@ function PostRead() {
 
   const deletePost = ()=>erase(pno).then(()=>navigate("/")).catch(res=>console.log(res));
 
-  if(loading || !post) return <LoadingSpinner />
+  if(isFail) 
+    return <Alert variant='danger'>서버가 응답하지 않습니다</Alert>
+  if(loading || post===null) return <LoadingSpinner />
 
   return (
     <>
@@ -72,14 +81,14 @@ function PostRead() {
           <span className='read-value'>{post.goodCnt}</span>
         </div>
         {
-          (username!=null && username!==post.writer) &&  <GoodButton pno={pno} initialGoodCnt={post.goodCnt}>좋아요</GoodButton>
+          isWriter(post.writer) &&  <GoodButton pno={pno} initialGoodCnt={post.goodCnt}>좋아요</GoodButton>
         }
       </div>
 
       <div style={{minHeight:"600px", backgroundColor:'#eee'}} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }} />
 
       {
-        (username!=null && username===post.writer) &&
+        isWriter(post.writer) &&
         <div className='mt-3 mb-3'>
           <Button variant="success" onClick={()=>navigate(`/post/update?pno=${pno}`)} className="me-3">변경으로</Button>
           <Button variant="danger" onClick={deletePost}>삭제하기</Button>
@@ -87,8 +96,8 @@ function PostRead() {
       }
 
       <div className='mt-3 mb-3'>
-        { username!=null && <CommentInput pno={pno} value={vComment.value} message={vComment.message} change={vComment.change} check={vComment.check} write={vComment.write} /> }
-        <CommentList loginId={username} />
+        { isLogin() && <CommentInput pno={pno} {...vComment} /> }
+        <CommentList />
       </div>
     </>
   )

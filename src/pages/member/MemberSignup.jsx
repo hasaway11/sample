@@ -10,9 +10,12 @@ import usePassword from "../../hooks/usePassword";
 import usePhoto from "../../hooks/usePhoto";
 import useUsername from "../../hooks/useUsername";
 import {signup} from '../../utils/memberApi';
+import { Alert } from "react-bootstrap";
 
 function MemberSignup() {
   const [isSubmitting, setSubmitting] = useState(false);
+  const [isFail, setFail] = useState(false);
+  const navigate = useNavigate();
 
   const vProfile = usePhoto();
   const vUsername = useUsername(true);
@@ -20,28 +23,28 @@ function MemberSignup() {
   const vConfirmPassword = useConfirmPassword(vPassword);
   const vEmail = useEmail();
 
-  const navigate = useNavigate();
-
   const doSignup=async()=>{
+    if(isSubmitting) return;
     setSubmitting(true);
 
-    try {
-      const r1 = await vUsername.check();
-      const r2 = vPassword.check();
-      const r3 = vConfirmPassword.check();
-      const r4 = vEmail.check();
-      if (!(r1 && r2 && r3 && r4)) 
-        return;
+    const r1 = await vUsername.check();
+    const r2 = vPassword.check();
+    const r3 = vConfirmPassword.check();
+    const r4 = vEmail.check();
+    if (!(r1 && r2 && r3 && r4)) 
+      return;
 
-      const formData = new FormData();
-      formData.append('username', vUsername.value);
-      formData.append('password', vPassword.value);
-      formData.append('email', vEmail.value);
-      formData.append('profile', vProfile.value);
-      
+    const formData = new FormData();
+    formData.append('username', vUsername.value);
+    formData.append('password', vPassword.value);
+    formData.append('email', vEmail.value);
+    formData.append('profile', vProfile.value);
+
+    try {
       await signup(formData);
       navigate('/member/login');
     } catch(err) {
+      setFail(true);
       console.log(err);
     } finally {
       setSubmitting(false);
@@ -50,11 +53,12 @@ function MemberSignup() {
 
   return (
     <>
-      <ProfileField name='photo' label='사진' onChange={vProfile.change} photoUrl={vProfile.photoUrl} alt='미리보기' />
-      <TextField label='아이디' name='username' value={vUsername.value} message={vUsername.message} onChange={vUsername.change} onBlur={vUsername.check} />
-      <TextField label='이메일' name='email' value={vEmail.value} message={vEmail.message} onChange={vEmail.change} onBlur={vEmail.check} />
-      <TextField label='비밀번호' name='password' type='password' value={vPassword.value} message={vPassword.message} onChange={vPassword.change} onBlur={vPassword.check} />
-      <TextField label='비밀번호 확인' name='confirm-password' type='password' value={vConfirmPassword.value} message={vConfirmPassword.message} onChange={vConfirmPassword.change} onBlur={vConfirmPassword.check} />
+      {isFail &&  <Alert variant='danger'>회원 가입에 실패했습니다</Alert>}
+      <ProfileField name='photo' label='사진' alt='미리보기' {...vProfile} />
+      <TextField label='아이디' name='username' {...vUsername} />
+      <TextField label='이메일' name='email' {...vEmail} />
+      <TextField label='비밀번호' name='password' {...vPassword} />
+      <TextField label='비밀번호 확인' name='confirm-password' type='password' {...vConfirmPassword} />
       <BlockButton label={isSubmitting ? "가입 처리 중..." : "회원 가입"} onClick={doSignup} styleName='primary' disabled={isSubmitting}/>
     </>
   )

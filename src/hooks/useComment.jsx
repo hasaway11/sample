@@ -7,9 +7,9 @@ function useComment() {
   const [message, setMessage] = useState('');
   const setComments = usePostStore(state=>state.setComments);
 
-  const change = e=>setValue(e.target.value);
+  const onChange = e=>setValue(e.target.value);
 
-  const check=()=>{
+  const onBlur=()=>{
     setMessage('');
     if(value!=='')
       return true;
@@ -18,7 +18,7 @@ function useComment() {
   }
 
   const write=async(pno)=>{
-    const result = check();
+    const result = onBlur();
     if(!result) 
       return;
     const requestForm =  {pno: pno, content:value};
@@ -40,7 +40,7 @@ function useComment() {
     }
   }
 
-  return {value, message, check, change, remove, write};
+  return {value, message, onBlur, onChange, remove, write};
 }
 
 export default useComment

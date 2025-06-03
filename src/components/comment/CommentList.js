@@ -2,9 +2,11 @@ import { Button } from 'react-bootstrap'
 import usePostStore from '../../stores/postStore'
 import useComment from '../../hooks/useComment'
 import React from 'react';
+import useAuthStore from '../../stores/authStore';
 
-const CommentList = React.memo(({loginId})=>{
+const CommentList =()=>{
 	const comments = usePostStore(state=>state.comments);
+	const loginId = useAuthStore(state=>state.username);
 	const {remove} = useComment();
 
   return (
@@ -30,6 +32,6 @@ const CommentList = React.memo(({loginId})=>{
 		}
 		</>
   )
-});
+};
 
 export default CommentList
