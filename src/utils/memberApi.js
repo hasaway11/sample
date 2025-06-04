@@ -6,7 +6,7 @@ export const signup = (formData)=>api.post('/api/members/new', formData);
 
 export const findUsername = (email)=>api.get(`/api/members/username?email=${email}`);
 
-export const resetPassword = (object)=>api.put(`/api/members/password`, new URLSearchParams(object));
+export const resetPassword = (username)=>api.put(`/api/members/password?username=${username}`);
 
 export const checkPassword = (password)=>api.get(`/api/members/check-password?password=${password}`);
 

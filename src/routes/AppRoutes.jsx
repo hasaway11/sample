@@ -15,6 +15,8 @@ import MemberChangePassword from '../pages/member/MemberChangePassword'
 
 import PrivateRoute from '../routes/PrivateRoute'
 import PublicRoute from '../routes/PublicRoute'
+import MemberEmailVerified from '../pages/member/MemberEmailVerified';
+import MemberResetPassword from '../pages/member/MemberResetPassword';
 
 
 function AppRoutes() {
@@ -26,7 +28,9 @@ function AppRoutes() {
       <Route path="/post/update" element={<PrivateRoute element={<PostUpdate />} /> } />
       <Route path="/member/signup" element={<PublicRoute element={<MemberSignup />} /> } />
       <Route path="/member/login" element={<PublicRoute element={<MemberLogin />} /> } />
+      <Route path="/member/email-verified" element={<PublicRoute element={<MemberEmailVerified />} />} />
       <Route path="/member/find-username" element={<PublicRoute element={<MemberFindUsername />} /> } />
+      <Route path="/member/find-password" element={<PublicRoute element={<MemberResetPassword />} /> } />
       <Route path="/member/check-password" element={<PrivateRoute element={<MemberCheckPassword />} /> } />
       <Route path="/member/read" element={<PrivateRoute element={<MemberRead />} /> } />
       <Route path="/member/change-password" element={<PrivateRoute element={<MemberChangePassword />} /> } />

@@ -15,7 +15,6 @@ import { AsyncStatus } from "../../utils/constants";
 
 function MemberSignup() {
   const [asyncStatus, setAsyncStatus] = useState(AsyncStatus.IDLE);
-  const navigate = useNavigate();
 
   const vProfile = usePhoto();
   const vUsername = useUsername(true);
@@ -44,13 +43,17 @@ function MemberSignup() {
     try {
       await signup(formData);
       setAsyncStatus(AsyncStatus.SUCCESS);
-      // navigate는 blocking하지 않는다
-      navigate('/member/login');
-      return;
     } catch(err) {
       setAsyncStatus(AsyncStatus.FAIL);
       console.log(err);
     }
+  }
+  if(asyncStatus===AsyncStatus.SUCCESS) {
+    return (
+      <>
+        <Alert variant="success">가입확인메일을 발송했습니다. 이메일을 확인하세요</Alert>
+      </>
+    )
   }
   return (
     <>
