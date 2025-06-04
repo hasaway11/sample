@@ -5,6 +5,7 @@ import TextField from "../../components/common/TextField";
 import BlockButton from "../../components/common/BlockButton";
 import { AsyncStatus } from "../../utils/constants";
 import useUsername from "../../hooks/useUsername";
+import { resetPassword } from "../../utils/memberApi";
 
 function MemberResetPassword() {
   const [asyncStatus, setAsyncStatus] = useState(AsyncStatus.IDLE);
@@ -21,7 +22,7 @@ function MemberResetPassword() {
     }
 
     try {
-      const response = await resetUsername(vUsername.value);
+      const response = await resetPassword(vUsername.value);
       setAsyncStatus(AsyncStatus.SUCCESS);
     } catch(err) {
       setAsyncStatus(AsyncStatus.FAIL);

@@ -4,6 +4,8 @@ export const idAvailable = (username)=>api.get(`/api/members/check-username?user
 
 export const signup = (formData)=>api.post('/api/members/new', formData);
 
+export const verifyCode = (code)=>api.put(`/api/members/verify?code=${code}`)
+
 export const findUsername = (email)=>api.get(`/api/members/username?email=${email}`);
 
 export const resetPassword = (username)=>api.put(`/api/members/password?username=${username}`);
