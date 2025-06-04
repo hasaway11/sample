@@ -22,7 +22,7 @@ function MemberResetPassword() {
     }
 
     try {
-      const response = await resetPassword(vUsername.value);
+      await resetPassword(vUsername.value);
       setAsyncStatus(AsyncStatus.SUCCESS);
     } catch(err) {
       setAsyncStatus(AsyncStatus.FAIL);
